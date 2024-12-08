@@ -37,63 +37,18 @@ library(readr)
 
 data <- read_csv("Nutrition__Physical_Activity__and_Obesity_-_Behavioral_Risk_Factor_Surveillance_System.csv")
 head(data)
+str(data)
 
-# 1. Rename columns to make them more readable
+# Rename columns and handle special cases
 data <- data %>%
-  rename_with(~ str_replace_all(., "\\s+", "_")) %>%   # Replace spaces with underscores
-  rename_with(~ str_to_lower(.))                      # Convert column names to lowercase
+  rename_with(~ str_replace_all(., "[^[:alnum:]_]", "_")) %>%  # Replace non-alphanumeric characters with underscores
+  rename_with(~ str_to_lower(.))
 
-# 2. Handle missing values
-# Drop rows with missing data in critical columns (adjust column names as needed)
-data <- data %>%
-  drop_na()
-
-# Alternatively, you can replace missing values with a default value
-# Example: Replace missing numerical values with the column mean
-data <- data %>%
-  mutate(across(where(is.numeric), ~ replace_na(., mean(., na.rm = TRUE))))
-
-# 3. Filter out irrelevant or duplicate rows
-# Remove duplicate entries
-data <- data %>%
-  distinct()
-
-# Filter out rows with nonsensical or irrelevant data (e.g., invalid age or weight values)
-data <- data %>%
-  filter(age > 0, weight > 0)
-
-# 4. Convert columns to appropriate data types
-data <- data %>%
-  mutate(
-    age = as.integer(age),                # Convert age to integer
-    physical_activity = as.factor(physical_activity),  # Convert activity level to factor
-    state = as.factor(state)              # Convert state to factor
+data <- data %>% rename(
+    age = "age_years_",                # Special case for "Age(years)"
+    race = "race_ethnicity"           # Special case for "Race/Ethnicity"
   )
 
-# 5. Standardize categorical variables
-# Clean up inconsistencies in categorical values (e.g., typos or case differences)
-data <- data %>%
-  mutate(
-    physical_activity = str_to_lower(physical_activity) %>%
-      str_replace_all("_", " ") %>%
-      str_trim()
-  )
 
-# 6. Create new features if needed
-# Example: Create a BMI category column
-data <- data %>%
-  mutate(bmi_category = case_when(
-    bmi < 18.5 ~ "Underweight",
-    bmi >= 18.5 & bmi < 24.9 ~ "Normal weight",
-    bmi >= 25 & bmi < 29.9 ~ "Overweight",
-    bmi >= 30 ~ "Obesity",
-    TRUE ~ "Unknown"
-  ))
-
-# 7. Save the cleaned dataset (optional)
-write_csv(data, "cleaned_data.csv")
-
-# Preview the cleaned dataset
-head(data)
 ```
 
