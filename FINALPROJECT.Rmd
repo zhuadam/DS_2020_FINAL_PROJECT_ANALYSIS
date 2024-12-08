@@ -4,16 +4,96 @@ author: "Braydn Weaver and Adam Zhu"
 date: "2024-12-08"
 output: html_document
 ---
+# Introduction
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+In recent years, there has been a growing interest in understanding the interplay between physical activity, nutrition, and their impacts on health outcomes such as obesity, cardiovascular fitness, and overall well-being. This data science project aims to explore trends and insights related to these critical areas by leveraging real-world data from the Nutrition, Physical Activity, and Obesity - Behavioral Risk Factor Surveillance System (BRFSS). This dataset, collected through comprehensive surveys, provides valuable information on diet, physical activity, and weight status across different demographics and geographic locations.
+
+The primary objective of this project is to perform an exploratory data analysis (EDA) to uncover patterns and relationships between exercise habits, dietary choices, and health metrics. By analyzing this data, we aim to answer questions such as:
+	•	How do physical activity levels vary across different populations?
+	•	What is the relationship between exercise frequency and obesity rates?
+	•	Are there significant regional differences in physical activity and nutrition trends?
+
+The insights derived from this analysis have the potential to inform public health policies, guide community wellness programs, and raise awareness about the importance of healthy lifestyle choices. This project not only highlights the utility of data-driven approaches in addressing societal health challenges but also provides an opportunity to deepen our understanding of how daily habits influence long-term health outcomes.
+
+# Cleaning
+
+To prepare the dataset for analysis, several data cleaning and preprocessing steps were performed to ensure its quality and usability. First, the column names were standardized by replacing spaces with underscores and converting all names to lowercase. This makes referencing columns more consistent and eliminates potential errors caused by discrepancies in naming conventions.
+
+Next, missing values were addressed, as they can significantly impact the accuracy of the analysis. Rows with missing data in critical columns were removed. Alternatively, numerical columns with missing values were imputed using the mean of the respective column. This ensures the dataset remains complete without introducing bias.
+
+Duplicate rows, which can skew results, were identified and removed to ensure each data point represented a unique observation. Filters were applied to eliminate nonsensical or irrelevant data, such as invalid age or weight values, to maintain the integrity of the dataset.
+
+To enhance usability, data types were adjusted where necessary. For instance, numerical variables like age were converted to integers, while categorical variables such as physical activity levels and state names were converted to factors. Additionally, categorical variables were standardized to remove inconsistencies, such as typos or varying capitalization.
+
+Feature engineering was also employed to add meaningful insights to the dataset. A new variable, BMI category, was created to classify individuals into groups like “Underweight,” “Normal weight,” “Overweight,” and “Obesity” based on their BMI values. This facilitates easier segmentation and analysis of the population based on health metrics.
+
+Finally, the cleaned dataset was previewed to verify the changes, and an option to save the cleaned data to a new file was provided. These steps ensure that the dataset is ready for exploratory data analysis and yields reliable, interpretable results.
 
 ```{r}
+library(dplyr)
+library(tidyr)
+library(stringr)
 library(readr)
 
 data <- read_csv("Nutrition__Physical_Activity__and_Obesity_-_Behavioral_Risk_Factor_Surveillance_System.csv")
+head(data)
 
+# 1. Rename columns to make them more readable
+data <- data %>%
+  rename_with(~ str_replace_all(., "\\s+", "_")) %>%   # Replace spaces with underscores
+  rename_with(~ str_to_lower(.))                      # Convert column names to lowercase
+
+# 2. Handle missing values
+# Drop rows with missing data in critical columns (adjust column names as needed)
+data <- data %>%
+  drop_na()
+
+# Alternatively, you can replace missing values with a default value
+# Example: Replace missing numerical values with the column mean
+data <- data %>%
+  mutate(across(where(is.numeric), ~ replace_na(., mean(., na.rm = TRUE))))
+
+# 3. Filter out irrelevant or duplicate rows
+# Remove duplicate entries
+data <- data %>%
+  distinct()
+
+# Filter out rows with nonsensical or irrelevant data (e.g., invalid age or weight values)
+data <- data %>%
+  filter(age > 0, weight > 0)
+
+# 4. Convert columns to appropriate data types
+data <- data %>%
+  mutate(
+    age = as.integer(age),                # Convert age to integer
+    physical_activity = as.factor(physical_activity),  # Convert activity level to factor
+    state = as.factor(state)              # Convert state to factor
+  )
+
+# 5. Standardize categorical variables
+# Clean up inconsistencies in categorical values (e.g., typos or case differences)
+data <- data %>%
+  mutate(
+    physical_activity = str_to_lower(physical_activity) %>%
+      str_replace_all("_", " ") %>%
+      str_trim()
+  )
+
+# 6. Create new features if needed
+# Example: Create a BMI category column
+data <- data %>%
+  mutate(bmi_category = case_when(
+    bmi < 18.5 ~ "Underweight",
+    bmi >= 18.5 & bmi < 24.9 ~ "Normal weight",
+    bmi >= 25 & bmi < 29.9 ~ "Overweight",
+    bmi >= 30 ~ "Obesity",
+    TRUE ~ "Unknown"
+  ))
+
+# 7. Save the cleaned dataset (optional)
+write_csv(data, "cleaned_data.csv")
+
+# Preview the cleaned dataset
 head(data)
 ```
 
