@@ -17,17 +17,7 @@ The insights derived from this analysis have the potential to inform public heal
 
 # Cleaning
 
-To prepare the dataset for analysis, several data cleaning and preprocessing steps were performed to ensure its quality and usability. First, the column names were standardized by replacing spaces with underscores and converting all names to lowercase. This makes referencing columns more consistent and eliminates potential errors caused by discrepancies in naming conventions.
 
-Next, missing values were addressed, as they can significantly impact the accuracy of the analysis. Rows with missing data in critical columns were removed. Alternatively, numerical columns with missing values were imputed using the mean of the respective column. This ensures the dataset remains complete without introducing bias.
-
-Duplicate rows, which can skew results, were identified and removed to ensure each data point represented a unique observation. Filters were applied to eliminate nonsensical or irrelevant data, such as invalid age or weight values, to maintain the integrity of the dataset.
-
-To enhance usability, data types were adjusted where necessary. For instance, numerical variables like age were converted to integers, while categorical variables such as physical activity levels and state names were converted to factors. Additionally, categorical variables were standardized to remove inconsistencies, such as typos or varying capitalization.
-
-Feature engineering was also employed to add meaningful insights to the dataset. A new variable, BMI category, was created to classify individuals into groups like “Underweight,” “Normal weight,” “Overweight,” and “Obesity” based on their BMI values. This facilitates easier segmentation and analysis of the population based on health metrics.
-
-Finally, the cleaned dataset was previewed to verify the changes, and an option to save the cleaned data to a new file was provided. These steps ensure that the dataset is ready for exploratory data analysis and yields reliable, interpretable results.
 
 ```{r}
 library(dplyr)
@@ -38,16 +28,52 @@ library(readr)
 data <- read_csv("Nutrition__Physical_Activity__and_Obesity_-_Behavioral_Risk_Factor_Surveillance_System.csv")
 head(data)
 str(data)
+View(data)
 
 # Rename columns and handle special cases
 data <- data %>%
   rename_with(~ str_replace_all(., "[^[:alnum:]_]", "_")) %>%  # Replace non-alphanumeric characters with underscores
-  rename_with(~ str_to_lower(.))
-
-data <- data %>% rename(
+  rename_with(~ str_to_lower(.)) %>% rename(
     age = "age_years_",                # Special case for "Age(years)"
     race = "race_ethnicity"           # Special case for "Race/Ethnicity"
   )
+
+# Filter Out Irrelevant or Duplicate Rows
+# Remove Duplicate Rows
+data <- data %>%
+  distinct()
+
+# Convert Columns to Appropriate Data Types
+data <- data %>%
+  mutate(
+    yearstart = as.integer(yearstart),       # Ensure year_start is integer
+    yearend = as.integer(yearend),           # Ensure year_end is integer
+    race = as.factor(race),                    # Convert race to factor
+    gender = as.factor(gender),                # Convert gender to factor
+    locationdesc  = as.factor(locationdesc),  # Convert location_desc to factor
+    data_value = as.numeric(data_value),       # Ensure data_value is numeric
+    class = as.factor(class),                  # Convert class to factor
+    topic = as.factor(topic),                  # Convert topic to factor
+    question = as.factor(question)             # Convert question to factor
+  )
+
+# Standardize Categorical Variables
+# Clean up inconsistencies in categorical values
+data <- data %>%
+  mutate(
+    gender = gender %>% str_to_lower() %>% str_trim(),  # Clean gender values
+    race = race %>% str_to_lower() %>% str_trim(),      # Clean race values
+    locationdesc = locationdesc %>% str_to_lower() %>% str_trim(),  # Clean location description
+    class = class %>% str_to_lower() %>% str_trim(),    # Clean class values
+    topic = topic %>% str_to_lower() %>% str_trim()     # Clean topic values
+  )
+unique(data$gender)
+unique(data$race)
+unique(data$locationdesc)
+unique(data$class)
+
+# 7. Save the cleaned dataset (optional)
+write_csv(data, "cleaned_data.csv")
 
 
 ```
