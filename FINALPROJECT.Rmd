@@ -17,9 +17,16 @@ The insights derived from this analysis have the potential to inform public heal
 
 # Cleaning
 
+The dataset underwent a comprehensive cleaning process to prepare it for analysis. First, column names were standardized by replacing non-alphanumeric characters with underscores and converting all names to lowercase. Special cases, such as renaming “Age(years)” to age and “Race/Ethnicity” to race, were handled for improved clarity and consistency.
+
+Next, duplicate rows were removed using the distinct() function to ensure each observation was unique. Columns were then converted to their appropriate data types. Numeric fields like yearstart and yearend were converted to integers, while categorical variables such as race, gender, and class were transformed into factors for efficient analysis.
+
+Categorical variables were further standardized to clean up inconsistencies in their values. Text-based variables like gender, race, and locationdesc were converted to lowercase, stripped of leading and trailing whitespace, and formatted consistently. This step ensured uniformity across entries, preventing errors during analysis.
+
+Finally, the cleaned dataset was saved as a new file, “cleaned_data.csv,” providing a polished version ready for exploratory data analysis. These steps ensured that the dataset was free of duplicates, had consistent column names and data types, and addressed potential issues with categorical data inconsistencies.
 
 
-```{r}
+```{r, echo=TRUE, results='hide', message=FALSE, warning=FALSE}
 library(dplyr)
 library(tidyr)
 library(stringr)
@@ -28,7 +35,6 @@ library(readr)
 data <- read_csv("Nutrition__Physical_Activity__and_Obesity_-_Behavioral_Risk_Factor_Surveillance_System.csv")
 head(data)
 str(data)
-View(data)
 
 # Rename columns and handle special cases
 data <- data %>%
@@ -74,7 +80,75 @@ unique(data$class)
 
 # 7. Save the cleaned dataset (optional)
 write_csv(data, "cleaned_data.csv")
-
-
 ```
 
+# Questions Being Asked
+
+As we analyze the dataset, the following questions will guide our exploration:
+
+### Demographic Trends
+1. How do obesity rates vary by age, gender, and race?
+2. What percentage of adults meet physical activity guidelines, and how does this differ across demographics?
+
+### Temporal Trends
+3. How have obesity and physical activity rates changed over time?
+4. Have disparities between demographic groups increased or decreased over time?
+
+### Regional Patterns
+5. Are there regional differences in obesity and physical activity levels?
+6. Do states with higher physical activity rates have lower obesity rates?
+
+### Relationships Between Variables
+7. Are individuals who meet physical activity guidelines less likely to be obese?
+8. What is the relationship between income, education, and obesity or physical activity rates?
+
+### Exploratory Insights
+9. Are there any outliers or surprising trends in the data?
+
+# Analysis
+
+### Obesity Trends Over Time
+
+Obesity rates have been a growing public health concern across the United States. In this analysis, we examine how obesity rates have evolved over the years in various locations. The goal is to identify regional differences and overall trends, which may inform targeted interventions or policies.
+
+```{r obesity-trends, echo = TRUE, message = FALSE, warning = FALSE}
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+library(readr)
+
+# Load the cleaned dataset
+cleaned_data <- read_csv("cleaned_data.csv")
+
+# Filter for obesity-related data
+obesity_data <- cleaned_data %>%
+  filter(str_detect(tolower(class), "obesity")) %>%
+  mutate(data_value = as.numeric(data_value))
+
+# Aggregate data to calculate the average obesity rate for each year across all locations
+avg_obesity_overall <- obesity_data %>%
+  group_by(yearstart) %>%
+  summarise(avg_obesity_rate = mean(data_value, na.rm = TRUE)) %>%
+  ungroup()
+
+# Plot the overall average obesity trends over time
+ggplot(avg_obesity_overall, aes(x = yearstart, y = avg_obesity_rate)) +
+  geom_line(color = "blue", size = 1.2) +
+  geom_point(color = "darkblue", size = 2) +
+  geom_smooth(method = "lm", color = "red", linetype = "dashed", se = FALSE) +
+  labs(
+    title = "Overall Average Obesity Trends Over Time",
+    subtitle = "Average obesity rate across all locations for each year",
+    x = "Year",
+    y = "Average Obesity Rate (%)"
+  ) +
+  theme_minimal(base_size = 14)
+
+# Fit a linear regression model
+obesity_trend_model <- lm(avg_obesity_rate ~ yearstart, data = avg_obesity_overall)
+annual_increase <- coef(obesity_trend_model)["yearstart"]
+annual_increase
+```
+The analysis of the overall average obesity rate across all locations reveals a consistent upward trend over the observed years. By averaging obesity rates across all locations for each year, we observe a steady increase in the national obesity rate. Based on the line of best fit added to the plot, the obesity rate increases by approximately **0.22 percentage points per year**, indicating a clear and concerning trend.
+
+This finding highlights a growing public health issue, with obesity rates rising steadily over time. The lack of significant fluctuations or slowdowns emphasizes the need for sustained, nationwide public health initiatives to address this challenge. Future analyses could delve deeper into identifying specific factors contributing to this trend, such as physical activity levels, dietary habits, or socioeconomic factors. Additionally, exploring variations across demographic groups (e.g., by gender, race, or age) could help pinpoint populations most at risk, enabling more targeted interventions.
