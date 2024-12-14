@@ -258,10 +258,7 @@ This project explored obesity trends and their relationships with various factor
 2. **Obesity Rates by Location**:
    - Significant regional disparities were observed, with states like **West Virginia** (35.49%) and **Mississippi** (35.46%) showing the highest obesity rates, while the **District of Columbia** (27.88%) had the lowest. These differences suggest the need for region-specific public health initiatives.
 
-3. **Relationship Between Physical Activity and Obesity**:
-   - A negative correlation between physical activity and obesity rates was observed, reinforcing the role of physical activity in combating obesity. However, the relationship was not linear, indicating that other factors, such as diet and socioeconomic conditions, may play a significant role.
-
-4. **Obesity Rates by Age Group**:
+3. **Obesity Rates by Age Group**:
    - The age group **45–54 years** had the highest average obesity rate (36.54%), while the **18–24 years** group had the lowest (22.09%). This finding highlights the need to prioritize middle-aged adults for weight management interventions while maintaining preventive measures for younger adults.
 
 ### Final Remarks
