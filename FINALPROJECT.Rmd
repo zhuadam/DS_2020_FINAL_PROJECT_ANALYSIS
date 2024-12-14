@@ -152,7 +152,7 @@ The analysis of the overall average obesity rate across all locations reveals a 
 
 This finding highlights a growing public health issue, with obesity rates rising steadily over time. The lack of significant fluctuations or slowdowns emphasizes the need for sustained, nationwide public health initiatives to address this challenge. Future analyses could delve deeper into identifying specific factors contributing to this trend, such as physical activity levels, dietary habits, or socioeconomic factors. Additionally, exploring variations across demographic groups (e.g., by gender, race, or age) could help pinpoint populations most at risk, enabling more targeted interventions.
 
-### Obesity Trends Over Time
+### Obesity Trends by Location
 
 Obesity rates vary significantly across locations, reflecting differences in regional factors such as lifestyle, socioeconomic conditions, and public health initiatives. In this section, we analyze the average obesity rates by location to identify areas with the highest and lowest obesity prevalence. Understanding these patterns can help inform targeted health interventions.
 
@@ -160,6 +160,8 @@ Obesity rates vary significantly across locations, reflecting differences in reg
 library(ggplot2)
 library(dplyr)
 library(readr)
+
+cleaned_data <- read_csv("cleaned_data.csv")
 
 avg_obesity_by_location <- obesity_data %>%
   group_by(locationdesc) %>%
@@ -188,4 +190,83 @@ top_and_lowest_states
 The analysis reveals significant regional variation in obesity rates. The state with the highest average obesity rate is **West Virginia**, with an average rate of **35.49%**, followed closely by **Mississippi** (35.46%) and **Louisiana** (34.83%). On the other end of the spectrum, the location with the lowest average obesity rate is **District of Columbia**, with an average rate of **27.88%**.
 
 These findings highlight the need for targeted public health campaigns in states with the highest obesity rates, such as West Virginia, Mississippi, and Louisiana. Meanwhile, the District of Columbia could serve as a model for successful interventions and health initiatives. Further analysis could explore the underlying factors contributing to these regional disparities, such as socioeconomic conditions, access to healthcare, and physical activity levels, to design more effective interventions.
+
+### Obesity Rates by Age Group
+
+Age is an important factor influencing obesity prevalence, as metabolic changes, lifestyle habits, and physical activity levels often vary across different age groups. In this analysis, we explore how obesity rates differ among various age groups, aiming to identify the groups most affected by obesity. Understanding these variations can help tailor public health interventions to address the needs of specific age groups effectively.
+```{r}
+# Load necessary libraries
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(readr)
+
+# Load the cleaned dataset
+cleaned_data <- read_csv("cleaned_data.csv")
+
+# Filter for obesity-related data
+obesity_data <- cleaned_data %>%
+  filter(str_detect(tolower(class), "obesity")) %>%
+  mutate(
+    data_value = as.numeric(data_value),
+    age_group = stratification1  # Use the stratification1 column for age groups
+  ) %>%
+  rename(obesity_rate = data_value)
+
+# Filter for only age groups
+age_groups <- c("18 - 24", "25 - 34", "35 - 44", "45 - 54", "55 - 64", "65 or older")
+obesity_by_age <- obesity_data %>%
+  filter(age_group %in% age_groups)
+
+# Aggregate data to calculate average obesity rate by age group
+avg_obesity_by_age <- obesity_by_age %>%
+  group_by(age_group) %>%
+  summarise(avg_obesity_rate = mean(obesity_rate, na.rm = TRUE)) %>%
+  arrange(desc(avg_obesity_rate))
+
+# Plot the average obesity rates by age group
+ggplot(avg_obesity_by_age, aes(x = reorder(age_group, avg_obesity_rate), y = avg_obesity_rate, fill = age_group)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  labs(
+    title = "Average Obesity Rates by Age Group",
+    subtitle = "Obesity rates aggregated across all locations and years",
+    x = "Age Group",
+    y = "Average Obesity Rate (%)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "none") +
+  scale_fill_viridis_d()
+
+# Find the age group with the highest and lowest average obesity rate
+highest_obesity_age <- avg_obesity_by_age %>% slice_max(avg_obesity_rate, n = 1)
+lowest_obesity_age <- avg_obesity_by_age %>% slice_min(avg_obesity_rate, n = 1)
+highest_obesity_age
+lowest_obesity_age
+```
+The analysis of obesity rates by age group reveals significant variation across the age spectrum. The age group with the highest average obesity rate is **45–54 years**, with an average rate of **36.54%**, indicating that middle-aged adults are the most affected. On the other hand, the age group with the lowest average obesity rate is **18–24 years**, with an average rate of **22.09%**, suggesting that younger adults are less likely to be obese.
+
+These findings suggest that middle-aged adults may benefit from targeted public health initiatives focusing on weight management and healthy lifestyle promotion. Conversely, while younger adults have lower obesity rates, preventive measures in this group could help maintain these lower levels as they age. Future analyses could further explore contributing factors such as physical activity, diet, and socioeconomic conditions within these age groups.
+
+# Conclusion
+
+This project explored obesity trends and their relationships with various factors using data from the Behavioral Risk Factor Surveillance System. Through comprehensive data cleaning, aggregation, and visualization, the analysis highlighted key insights:
+
+1. **Overall Obesity Trends Over Time**:
+   - Obesity rates have shown a consistent upward trend over the years, with an average annual increase across all locations. This trend underscores the growing public health challenge of obesity in the United States.
+
+2. **Obesity Rates by Location**:
+   - Significant regional disparities were observed, with states like **West Virginia** (35.49%) and **Mississippi** (35.46%) showing the highest obesity rates, while the **District of Columbia** (27.88%) had the lowest. These differences suggest the need for region-specific public health initiatives.
+
+3. **Relationship Between Physical Activity and Obesity**:
+   - A negative correlation between physical activity and obesity rates was observed, reinforcing the role of physical activity in combating obesity. However, the relationship was not linear, indicating that other factors, such as diet and socioeconomic conditions, may play a significant role.
+
+4. **Obesity Rates by Age Group**:
+   - The age group **45–54 years** had the highest average obesity rate (36.54%), while the **18–24 years** group had the lowest (22.09%). This finding highlights the need to prioritize middle-aged adults for weight management interventions while maintaining preventive measures for younger adults.
+
+### Final Remarks
+
+This analysis emphasizes the multifaceted nature of obesity, shaped by demographic, regional, and behavioral factors. The findings provide valuable insights for policymakers, healthcare providers, and public health professionals to design targeted interventions. Future research could explore additional variables, such as diet and socioeconomic status, to gain a deeper understanding of the determinants of obesity.
+
+By leveraging exploratory data analysis techniques, this project has demonstrated the power of data-driven insights in addressing critical public health challenges. Continued efforts in this area will be vital for promoting healthier lifestyles and reducing obesity prevalence nationwide.
 
