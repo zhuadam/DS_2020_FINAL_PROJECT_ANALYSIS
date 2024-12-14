@@ -1,5 +1,5 @@
 ---
-title: "DS_2020_Final_Project"
+title: "Trends in Obesity Rates Across the United States"
 author: "Braydn Weaver and Adam Zhu"
 date: "2024-12-08"
 output: html_document
@@ -112,7 +112,6 @@ As we analyze the dataset, the following questions will guide our exploration:
 Obesity rates have been a growing public health concern across the United States. In this analysis, we examine how obesity rates have evolved over the years in various locations. The goal is to identify regional differences and overall trends, which may inform targeted interventions or policies.
 
 ```{r obesity-trends, echo = TRUE, message = FALSE, warning = FALSE}
-# Load necessary libraries
 library(ggplot2)
 library(dplyr)
 library(readr)
@@ -152,3 +151,41 @@ annual_increase
 The analysis of the overall average obesity rate across all locations reveals a consistent upward trend over the observed years. By averaging obesity rates across all locations for each year, we observe a steady increase in the national obesity rate. Based on the line of best fit added to the plot, the obesity rate increases by approximately **0.22 percentage points per year**, indicating a clear and concerning trend.
 
 This finding highlights a growing public health issue, with obesity rates rising steadily over time. The lack of significant fluctuations or slowdowns emphasizes the need for sustained, nationwide public health initiatives to address this challenge. Future analyses could delve deeper into identifying specific factors contributing to this trend, such as physical activity levels, dietary habits, or socioeconomic factors. Additionally, exploring variations across demographic groups (e.g., by gender, race, or age) could help pinpoint populations most at risk, enabling more targeted interventions.
+
+### Obesity Trends Over Time
+
+Obesity rates vary significantly across locations, reflecting differences in regional factors such as lifestyle, socioeconomic conditions, and public health initiatives. In this section, we analyze the average obesity rates by location to identify areas with the highest and lowest obesity prevalence. Understanding these patterns can help inform targeted health interventions.
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(readr)
+
+avg_obesity_by_location <- obesity_data %>%
+  group_by(locationdesc) %>%
+  summarise(avg_obesity_rate = mean(data_value, na.rm = TRUE)) %>%
+  arrange(desc(avg_obesity_rate))
+
+ggplot(avg_obesity_by_location, aes(x = reorder(locationdesc, avg_obesity_rate), y = avg_obesity_rate, fill = locationdesc)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  labs(
+    title = "Average Obesity Rates by Location",
+    subtitle = "Average obesity rate across all years for each location",
+    x = "Location",
+    y = "Average Obesity Rate (%)"
+  ) +
+  theme_minimal(base_size = 9) +
+  theme(legend.position = "none") +
+  scale_fill_viridis_d()
+
+# Display the top 3 states with highest obesity rates and the lowest obesity rate
+top_3_highest <- avg_obesity_by_location %>% slice_max(avg_obesity_rate, n = 3)
+lowest <- avg_obesity_by_location %>% slice_min(avg_obesity_rate, n = 1)
+top_and_lowest_states <- bind_rows(top_3_highest, lowest)
+top_and_lowest_states
+```
+The analysis reveals significant regional variation in obesity rates. The state with the highest average obesity rate is **West Virginia**, with an average rate of **35.49%**, followed closely by **Mississippi** (35.46%) and **Louisiana** (34.83%). On the other end of the spectrum, the location with the lowest average obesity rate is **District of Columbia**, with an average rate of **27.88%**.
+
+These findings highlight the need for targeted public health campaigns in states with the highest obesity rates, such as West Virginia, Mississippi, and Louisiana. Meanwhile, the District of Columbia could serve as a model for successful interventions and health initiatives. Further analysis could explore the underlying factors contributing to these regional disparities, such as socioeconomic conditions, access to healthcare, and physical activity levels, to design more effective interventions.
+
