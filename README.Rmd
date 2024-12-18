@@ -306,9 +306,7 @@ lowest_obesity_gender <- avg_obesity_by_gender %>% slice_min(avg_obesity_rate, n
 highest_obesity_gender
 lowest_obesity_gender
 ```
-The analysis of obesity rates by gender for the most recent year reveals a notable difference between males and females. On average:
-	•	Males have a higher obesity rate of 36.02%,
-	•	Females have a slightly lower rate of 32.00%.
+The analysis of obesity rates by gender for the most recent year reveals a notable difference between males and females. On average, males have a higher obesity rate of 36.02%, while females have a slightly lower rate of 32.00%.
 
 These findings highlight the importance of considering gender-specific approaches when designing public health interventions to address obesity. Programs targeting men might benefit from focusing on factors contributing to their higher obesity rates, while ensuring that efforts to support women continue to maintain or reduce their rates. Understanding the underlying lifestyle, biological, and social factors contributing to these differences could further inform effective strategies.
 
@@ -322,10 +320,10 @@ This project explored obesity trends and their relationships with various factor
    - Obesity rates have shown a consistent upward trend over the years, with an average annual increase across all locations. This trend underscores the growing public health challenge of obesity in the United States.
 
 2. **Obesity Rates by Location**:
-   - Significant regional disparities were observed, with states like **West Virginia** (35.49%) and **Mississippi** (35.46%) showing the highest obesity rates, while the **District of Columbia** (27.88%) had the lowest. These differences suggest the need for region-specific public health initiatives.
+   - Significant regional disparities were observed, with states like **West Virginia** (36.62%) and **Louisiana** (36.18%) showing the highest obesity rates, while the **District of Columbia** (28.48%) had the lowest. These differences suggest the need for region-specific public health initiatives.
 
 3. **Obesity Rates by Age Group**:
-   - The age group **45–54 years** had the highest average obesity rate (36.54%), while the **18–24 years** group had the lowest (22.09%). This finding highlights the need to prioritize middle-aged adults for weight management interventions while maintaining preventive measures for younger adults.
+   - The age group **45–54 years** had the highest average obesity rate (38.05%), while the **18–24 years** group had the lowest (23.83%). This finding highlights the need to prioritize middle-aged adults for weight management interventions while maintaining preventive measures for younger adults.
 
 4. **Obesity Rates by Gender**:
    - The analysis of obesity rates by gender for the most recent year reveals a notable difference between males and females. On average:
@@ -348,7 +346,7 @@ The findings presented in this analysis were thoroughly verified and cross-check
 
 #### 2. Regional Disparities
 - Regional variations in obesity rates were analyzed for the most recent year (2023) to eliminate temporal inconsistencies.
-- The top three states with the highest obesity rates (**West Virginia, Mississippi, and Louisiana**) and the state with the lowest rate (**District of Columbia**) were identified through careful aggregation and filtering.
+- The top three states with the highest obesity rates (**West Virginia, Louisiana, and Alabama**) and the state with the lowest rate (**District of Columbia**) were identified through careful aggregation and filtering.
 - The use of bar plots provided a clear visual representation of disparities across states.
 
 
