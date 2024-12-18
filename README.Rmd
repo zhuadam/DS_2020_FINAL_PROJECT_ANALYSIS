@@ -2,7 +2,7 @@
 title: "Trends in Obesity Rates Across the United States"
 author: "Braydn Weaver and Adam Zhu"
 date: "2024-12-08"
-output: html_document
+output: github_document
 ---
 # Introduction
 
